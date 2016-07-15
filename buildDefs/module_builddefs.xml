@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_builddefs" default="compile.module.builddefs">
+  <dirname property="module.builddefs.basedir" file="${ant.file.module_builddefs}"/>
+  
+  <property name="module.jdk.home.builddefs" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.builddefs" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.builddefs" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.builddefs" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="builddefs.output.dir" value="${module.builddefs.basedir}/../out/production/buildDefs"/>
+  <property name="builddefs.testoutput.dir" value="${module.builddefs.basedir}/../out/test/buildDefs"/>
+  
+  <path id="builddefs.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="builddefs.module.production.classpath">
+    <path refid="${module.jdk.classpath.builddefs}"/>
+    <path refid="library.ant-1.9.7.classpath"/>
+    <path refid="library.com.sforce.partner.classpath"/>
+    <path refid="library.force-wsc-37.0.3-javadoc.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.6.2.classpath"/>
+  </path>
+  
+  <path id="builddefs.runtime.production.module.classpath">
+    <pathelement location="${builddefs.output.dir}"/>
+    <path refid="library.ant-1.9.7.classpath"/>
+    <path refid="library.com.sforce.partner.classpath"/>
+    <path refid="library.force-wsc-37.0.3-javadoc.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.6.2.classpath"/>
+  </path>
+  
+  <path id="builddefs.module.classpath">
+    <path refid="${module.jdk.classpath.builddefs}"/>
+    <pathelement location="${builddefs.output.dir}"/>
+    <path refid="library.ant-1.9.7.classpath"/>
+    <path refid="library.com.sforce.partner.classpath"/>
+    <path refid="library.force-wsc-37.0.3-javadoc.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.6.2.classpath"/>
+  </path>
+  
+  <path id="builddefs.runtime.module.classpath">
+    <pathelement location="${builddefs.testoutput.dir}"/>
+    <pathelement location="${builddefs.output.dir}"/>
+    <path refid="library.ant-1.9.7.classpath"/>
+    <path refid="library.com.sforce.partner.classpath"/>
+    <path refid="library.force-wsc-37.0.3-javadoc.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.6.2.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.builddefs">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.builddefs">
+    <patternset refid="excluded.from.module.builddefs"/>
+  </patternset>
+  
+  <path id="builddefs.module.sourcepath">
+    <dirset dir="${module.builddefs.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.builddefs" depends="compile.module.builddefs.production,compile.module.builddefs.tests" description="Compile module buildDefs"/>
+  
+  <target name="compile.module.builddefs.production" depends="register.custom.compilers" description="Compile module buildDefs; production classes">
+    <mkdir dir="${builddefs.output.dir}"/>
+    <javac2 destdir="${builddefs.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.builddefs}/javac">
+      <compilerarg line="${compiler.args.builddefs}"/>
+      <bootclasspath refid="builddefs.module.bootclasspath"/>
+      <classpath refid="builddefs.module.production.classpath"/>
+      <src refid="builddefs.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.builddefs"/>
+    </javac2>
+    
+    <copy todir="${builddefs.output.dir}">
+      <fileset dir="${module.builddefs.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.builddefs.tests" depends="register.custom.compilers,compile.module.builddefs.production" description="compile module buildDefs; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.builddefs" description="cleanup module">
+    <delete dir="${builddefs.output.dir}"/>
+    <delete dir="${builddefs.testoutput.dir}"/>
+  </target>
+</project>

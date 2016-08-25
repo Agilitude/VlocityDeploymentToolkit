@@ -31,6 +31,7 @@ public class Retrieve extends Task {
     private String unpackaged;
     private Boolean unzip;
     private VlocityClient client;
+    private String extractLastModifiedBy;
 
     public void setUsername (String username) {
         this.username = username;
@@ -84,13 +85,27 @@ public class Retrieve extends Task {
         this.unzip = unzip;
     }
 
+    public void setExtractLastModifiedBy(String extractLastModifiedBy) {this.extractLastModifiedBy = extractLastModifiedBy;}
+
     public void execute() throws BuildException {
         try {
             initialiseClient();
 
-            ArrayList<VlocityArtifact> omniscripts = retrieveOmniscripts(new ArrayList<>());
-            ArrayList<VlocityArtifact> dataRaptors = retrieveDataRaptors(new ArrayList<>());
-            ArrayList<VlocityArtifact> matrices = retrieveMatrices(new ArrayList<>());
+            ArrayList<VlocityArtifact> omniscripts;
+            ArrayList<VlocityArtifact> dataRaptors;
+            ArrayList<VlocityArtifact> matrices;
+
+            if (extractLastModifiedBy != null && !extractLastModifiedBy.isEmpty()) {
+                omniscripts = retrieveOmniscripts(extractLastModifiedBy);
+                dataRaptors = retrieveDataRaptors(extractLastModifiedBy);
+                matrices = retrieveMatrices(extractLastModifiedBy);
+            }
+            else {
+                omniscripts = retrieveOmniscripts(new ArrayList<>());
+                dataRaptors = retrieveDataRaptors(new ArrayList<>());
+                matrices = retrieveMatrices(new ArrayList<>());
+            }
+
             writeFiles(omniscripts, Constants.OMNISCRIPT_EXT);
             writeFiles(dataRaptors, Constants.DATARAPTOR_EXT);
             writeFiles(matrices, Constants.CALCULATIONMATRIX_EXT);
@@ -115,6 +130,21 @@ public class Retrieve extends Task {
         client.Login(this.username, this.password, this.serverurl);
 
         log("Logged in to Salesforce.com", Project.MSG_INFO);
+    }
+
+    private ArrayList<VlocityArtifact> retrieveOmniscripts(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
+        log("Reading Omniscripts", Project.MSG_INFO);
+        return client.QueryOmniscripts(username);
+    }
+
+    private ArrayList<VlocityArtifact> retrieveDataRaptors(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
+        log("Reading DataRaptors", Project.MSG_INFO);
+        return client.QueryDataRaptors(username);
+    }
+
+    private ArrayList<VlocityArtifact> retrieveMatrices(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
+        log("Reading Calculation Matrices", Project.MSG_INFO);
+        return client.QueryCalculationMatrices(username);
     }
 
     private ArrayList<VlocityArtifact> retrieveOmniscripts(ArrayList<String> names) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {

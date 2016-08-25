@@ -34,6 +34,7 @@ public abstract class VlocityArtifact {
     protected static final Boolean NULL_BOOLEAN = null;
     protected static final Date NULL_DATE = null;
     protected static final VlocityArtifact NULL_VLOCITY_ARTIFACT = null;
+    protected static final Integer MAX_RELATIONSHIP_DEPTH = 1;
 
     public String Key;
     public String ArtifactType;
@@ -284,6 +285,28 @@ public abstract class VlocityArtifact {
         }
 
         return result;
+    }
+
+    public SoqlQueryStringBuilder getQueryStringBuilder() throws PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException {
+        return getQueryStringBuilder(0);
+    }
+
+    private SoqlQueryStringBuilder getQueryStringBuilder(Integer currentRelationshipDept) throws PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException {
+        SoqlQueryStringBuilder builder = new SoqlQueryStringBuilder(getQualifiedName(this.getSObjectTypeName()));
+
+        for (VlocityArtifactFieldDefinition field : this.FieldDefinitions) {
+            if (field.FieldType == FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT) {
+                if (currentRelationshipDept < MAX_RELATIONSHIP_DEPTH) {
+                    VlocityArtifact child = VlocityPackageFactory.getPackage(null, this.PackageName, this.PackageVersion).InitialiseArtifact(field.ListElementTypeName);
+                    builder.AddSubQuery(getQualifiedName(field.SObjectFieldName), child.getQueryStringBuilder(currentRelationshipDept + 1));
+                }
+            }
+            else {
+                builder.AddField(getQualifiedName(field.SObjectFieldName));
+            }
+        }
+
+        return builder;
     }
 
 }

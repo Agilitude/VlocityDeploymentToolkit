@@ -2,9 +2,14 @@ package client;
 
 import com.sforce.soap.metadata.*;
 import com.sforce.soap.partner.*;
+import com.sforce.soap.partner.UpsertResult;
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
+import com.sforce.ws.SessionRenewer;
 
+import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -20,6 +25,8 @@ public class VlocityClient {
     private String packageName;
     private String packageVersion;
     private VlocityPackage vlPackage;
+    private Integer loginAttempts = 0;
+    private static final Integer MAX_LOGIN_ATTEMPTS = 2;
 
     public VlocityClient() {
 
@@ -28,31 +35,40 @@ public class VlocityClient {
     public void Login(String username, String password, String serverUrl) throws ConnectionException, PackageNotFoundException, VersionNotSupportedException, PackageNotSupportedException, ParseException {
         LoginResult lr = loginToPartner(username,password,serverUrl);
 
-        this.serverUrl = lr.getServerUrl();
-        this.sessionId = lr.getSessionId();
-
         establishMetadataConnection(lr);
         initialiseVersionInformation();
     }
 
+    public ArrayList<VlocityArtifact> QueryOmniscripts(String username) throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.OMNISCRIPT, username);
+    }
+
+    public ArrayList<VlocityArtifact> QueryDataRaptors(String username)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.DATARAPTOR, username);
+    }
+
+    public ArrayList<VlocityArtifact> QueryCalculationMatrices(String username)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.CALCULATION_MATRIX, username);
+    }
+
     public ArrayList<VlocityArtifact> QueryOmniscripts(ArrayList<String> names) throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetOmniscripts(names);
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.OMNISCRIPT, names);
     }
 
     public ArrayList<VlocityArtifact> QueryDataRaptors(ArrayList<String> names)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetDataRaptors(names);
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.DATARAPTOR, names);
     }
 
     public ArrayList<VlocityArtifact> QueryCalculationMatrices(ArrayList<String> names)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetCalculationMatrices(names);
+        return vlPackage.GetArtifacts(ArtifactTypesEnum.CALCULATION_MATRIX, names);
     }
 
     public Class GetArtifactClass(ArtifactTypesEnum artifactType) throws ArtifactNotSupportedException {
         return vlPackage.GetArtifactClass(artifactType);
     }
 
-    public void Deploy(ArrayList<VlocityArtifact> artifacts) {
-        //TODO: Call on VlocityPackage to deploy the code
+    public void Deploy(ArrayList<VlocityArtifact> artifacts) throws client.UnexpectedResponseException, client.UnexpectedDataPackException, IOException {
+        vlPackage.Deploy(artifacts);
     }
 
     private void initialiseVersionInformation() throws ConnectionException, PackageNotSupportedException, PackageNotFoundException, VersionNotSupportedException {
@@ -92,7 +108,13 @@ public class VlocityClient {
         config.setPassword(password);
 
         this.partnerApiConnection = new PartnerConnection(config);
-        return this.getPartnerApiConnection().login(username, password);
+
+        LoginResult lr = this.getPartnerApiConnection().login(username, password);
+
+        this.serverUrl = lr.getServerUrl();
+        this.sessionId = lr.getSessionId();
+
+        return lr;
     }
 
     private void establishMetadataConnection(LoginResult lr) throws ConnectionException {
@@ -117,5 +139,26 @@ public class VlocityClient {
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    public class ClientSessionRenewer implements SessionRenewer {
+
+        private VlocityClient Client;
+
+        public ClientSessionRenewer(VlocityClient client) {
+            this.Client = client;
+        }
+
+        @Override
+        public SessionRenewalHeader renewSession(ConnectorConfig config) throws ConnectionException {
+
+            LoginResult lr = this.Client.loginToPartner(config.getUsername(), config.getPassword(), config.getAuthEndpoint());
+
+            SessionRenewalHeader header = new SessionRenewalHeader();
+            header.name = new QName("urn:partner.soap.sforce.com", "SessionHeader");
+            header.headerElement = this.Client.getSessionId();
+            return header;
+        }
+
     }
 }

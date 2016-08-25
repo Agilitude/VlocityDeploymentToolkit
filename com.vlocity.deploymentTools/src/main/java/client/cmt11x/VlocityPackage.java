@@ -45,7 +45,7 @@ public class VlocityPackage extends client.VlocityPackage {
         return packageVersion;
     }
 
-    @Override
+    /*@Override
     public ArrayList<VlocityArtifact> GetOmniscripts(ArrayList<String> names) throws Exception {
         ArrayList<VlocityArtifact> omniscripts = new ArrayList<>();
 
@@ -145,123 +145,13 @@ public class VlocityPackage extends client.VlocityPackage {
         while (queryResults != null);
 
         return matrices;
-    }
-
-    private String getDatapack(String artifactType, String artifactId) throws IOException, UnexpectedResponseException, UnexpectedDataPackException {
-
-        URL partnerUrl = new URL(this.Client.getServerUrl());
-
-        URL dataPackUri = new URL(partnerUrl.getProtocol(), partnerUrl.getHost(), "/services/apexrest/"+ this.getPackageName() + "/v1/VlocityDataPacks/");
-
-        DataPackRequest requestData = new  DataPackRequest("Export", artifactType, artifactId);
-
-        HttpClient httpClient = HttpClientBuilder.create().build();
-
-        HttpPost dpCreateMethod = new HttpPost(dataPackUri.toExternalForm());
-        dpCreateMethod.setHeader("Authorization", "Bearer " + Client.getSessionId());
-        dpCreateMethod.setHeader("Content-Type", "application/json; charset=UTF-8");
-        dpCreateMethod.setHeader("Accept", "application/json");
-        dpCreateMethod.setHeader("Accept-Charset", "UTF-8");
-
-        String status;
-
-        Gson gson = new GsonBuilder().create();
-
-        do {
-
-            dpCreateMethod.setEntity(serialiseRequest(requestData));
-
-            HttpResponse response = httpClient.execute(dpCreateMethod);
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new UnexpectedResponseException(generateRequestResponseString(dpCreateMethod, response));
-            }
-
-            String resultText = EntityUtils.toString(response.getEntity());
-
-            LinkedTreeMap result;
-
-            try {
-                result = gson.fromJson(resultText, LinkedTreeMap.class);
-            }
-            catch (com.google.gson.JsonSyntaxException ex) {
-                throw new UnexpectedResponseException(generateRequestResponseString(dpCreateMethod, response));
-            }
-
-            requestData.processData.VlocityDataPackId = (String)result.get("VlocityDataPackId");
-            status = (String)result.get("Status");
-
-            if ("Error".equals(status)) {
-                //String message = (String)result.get("Message");
-                //throw new UnexpectedDataPackException("Unable to extract datapack + " + requestData.processData.VlocityDataPackId + " for " + artifactType + " " + artifactId + ". Error message is \n" + message);
-                return null;
-            }
-        }
-        while ("Ready".equals(status) || "InProgress".equals(status));
-
-
-        dataPackUri = new URL(dataPackUri, requestData.processData.VlocityDataPackId);
-
-        HttpGet getDpMethod = new HttpGet(dataPackUri.toExternalForm());
-        getDpMethod.setHeader("Authorization", "Bearer " + Client.getSessionId());
-        getDpMethod.setHeader("Accept", "application/json");
-        getDpMethod.setHeader("Accept-Charset", "UTF-8");
-
-        HttpResponse response = httpClient.execute(getDpMethod);
-        if (response.getStatusLine().getStatusCode() != 200) {
-            throw new UnexpectedResponseException(generateRequestResponseString(getDpMethod, response));
-        }
-
-        String resultText = EntityUtils.toString(response.getEntity());
-
-        return resultText;
-
-    }
-
-    private HttpEntity serialiseRequest(DataPackRequest requestData) throws UnsupportedEncodingException {
-        Gson gson = new GsonBuilder().create();
-        String bodyText = gson.toJson(requestData);
-        HttpEntity entity = new ByteArrayEntity(bodyText.getBytes("UTF-8"));
-
-        return entity;
-    }
-
-    private String generateRequestString(HttpRequestBase method) throws IOException {
-        ArrayList<String> lines = new ArrayList<>();
-        lines.add(method.getMethod() + " " + method.getURI().toURL().toExternalForm());
-
-        for (Header header : method.getAllHeaders()) {
-            lines.add(header.getName() + ": " + header.getValue());
-        }
-
-        if (method.getClass() == HttpPost.class) {
-            lines.add(EntityUtils.toString(((HttpPost)method).getEntity()));
-        }
-
-        return String.join("\n", lines) + "\n";
-    }
-
-    private String generateRequestResponseString(HttpRequestBase method, HttpResponse response) throws IOException {
-        ArrayList<String> lines = new ArrayList<>();
-        lines.add(generateRequestString(method));
-
-        lines.add(String.valueOf(response.getStatusLine().getProtocolVersion().toString() + " " + response.getStatusLine().getStatusCode() + "/" + response.getStatusLine().getReasonPhrase()));
-
-        for (Header header : response.getAllHeaders()) {
-            lines.add(header.getName() + ": " + header.getValue());
-        }
-
-        lines.add(EntityUtils.toString(response.getEntity()));
-
-        return String.join("\n", lines) + "\n";
-    }
-
+    }*/
 
     public void setPackageVersion(String value) {
         this.packageVersion = value;
     }
 
-    private String getOmniScriptQueryString(ArrayList<String> names) {
+    /*private String getOmniScriptQueryString(ArrayList<String> names) throws ArtifactNotSupportedException {
 
         String query =  "SELECT Id, Name, " +
                 "       vlocity_cmt__IsActive__c, " +
@@ -300,9 +190,9 @@ public class VlocityPackage extends client.VlocityPackage {
 
         return query;
 
-    }
+    }*/
 
-    private String getDataRaptorQueryString(ArrayList<String> names) {
+    /*private String getDataRaptorQueryString(ArrayList<String> names) {
         String query =  "SELECT Id, Name, " +
                 "       vlocity_cmt__BatchSize__c, " +
                 "       vlocity_cmt__DRMapName__c," +
@@ -348,7 +238,7 @@ public class VlocityPackage extends client.VlocityPackage {
         }
 
         return query;
-    }
+    }*/
 
     @Override
     public VlocityArtifact InitialiseArtifact(ArtifactTypesEnum artifactType) throws ArtifactNotSupportedException {
@@ -395,86 +285,6 @@ public class VlocityPackage extends client.VlocityPackage {
         }
     }
 
-    @Override
-    public void Deploy(ArrayList<VlocityArtifact> artifacts) throws UnexpectedResponseException, UnexpectedDataPackException, IOException {
-        if (artifacts == null || artifacts.size() == 0) return;
-
-        if (artifacts.get(0).hasDataPack()) {
-            for (VlocityArtifact artifact : artifacts) {
-                artifact.onBeforeDeploy();
-                DeployDataPack(artifact);
-            }
-
-        }
-    }
-
-    private void DeploySObject(ArrayList<VlocityArtifact> artifacts) {
-        ArrayList<SObject> sObjects = new ArrayList<>();
-
-        artifacts.forEach(a -> {
-            a.onBeforeDeploy();
-            sObjects.add(a.ToSObject());
-        });
-
-        //Client.getPartnerApiConnection().update(artifacts);
-    }
-
-    private void DeployDataPack(VlocityArtifact artifact)  throws IOException, UnexpectedResponseException, UnexpectedDataPackException {
-        URL partnerUrl = new URL(this.Client.getServerUrl());
-
-        URL dataPackUri = new URL(partnerUrl.getProtocol(), partnerUrl.getHost(), "/services/apexrest/"+ this.getPackageName() + "/v1/VlocityDataPacks/");
-
-        DataPackRequest requestData = new  DataPackRequest("Import", artifact.getDataPackType());
-        requestData.setDataPackContent(artifact.Datapack);
-
-        HttpClient httpClient = HttpClientBuilder.create().build();
-
-        HttpPost dpCreateMethod = new HttpPost(dataPackUri.toExternalForm());
-        dpCreateMethod.setHeader("Authorization", "Bearer " + Client.getSessionId());
-        dpCreateMethod.setHeader("Content-Type", "application/json; charset=UTF-8");
-        dpCreateMethod.setHeader("Accept", "application/json");
-        dpCreateMethod.setHeader("Accept-Charset", "UTF-8");
-
-        String status;
-
-        Gson gson = new GsonBuilder().create();
-
-        do {
-
-            dpCreateMethod.setEntity(serialiseRequest(requestData));
-
-            HttpResponse response = httpClient.execute(dpCreateMethod);
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new UnexpectedResponseException(generateRequestResponseString(dpCreateMethod, response));
-            }
-
-            String resultText = EntityUtils.toString(response.getEntity());
-
-            LinkedTreeMap result;
-
-            try {
-                result = gson.fromJson(resultText, LinkedTreeMap.class);
-            }
-            catch (com.google.gson.JsonSyntaxException ex) {
-                throw new UnexpectedResponseException(generateRequestResponseString(dpCreateMethod, response));
-            }
-
-            requestData.processData.VlocityDataPackId = (String)result.get("VlocityDataPackId");
-            requestData.processData.VlocityDataPackData = null;
-
-            status = (String)result.get("Status");
-
-            if ("Error".equals(status)) {
-                //String message = (String)result.get("Message");
-                //throw new UnexpectedDataPackException("Unable to extract datapack + " + requestData.processData.VlocityDataPackId + " for " + artifactType + " " + artifactId + ". Error message is \n" + message);
-                return;
-            }
-        }
-        while ("Ready".equals(status) || "InProgress".equals(status));
-
-    }
-
     public VlocityArtifact InitialiseOmniscript() {
         return new Omniscript(ArtifactTypesEnum.OMNISCRIPT, this.getPackageName(), this.getPackageVersion());
     }
@@ -505,18 +315,6 @@ public class VlocityPackage extends client.VlocityPackage {
 
     public VlocityArtifact initialiseCalculationMatrixRow() {
         return new CalculationMatrixRow(ArtifactTypesEnum.CALCULATION_MATRIX_ROW, this.getPackageName(), this.getPackageVersion());
-    }
-
-    public class UnexpectedResponseException extends Exception {
-        public UnexpectedResponseException(String message) {
-            super(message);
-        }
-    }
-
-    public class UnexpectedDataPackException extends Exception {
-        public UnexpectedDataPackException(String message) {
-            super(message);
-        }
     }
 
 }

@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 /**
  * Created by Derek on 29/06/2016.
  */
-public class CalculationMatrixRow extends VlocityArtifact {
-    public CalculationMatrixRow(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
+public class CalculationMatrix extends VlocityArtifact {
+    public CalculationMatrix(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("InputData__c", "InputData", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("OutputData__c", "OutputData", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
+            add(new VlocityArtifactFieldDefinition("Vlocity_Calculation_Table_Versions__r", "CalculationMatrixVersions", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.CALCULATION_MATRIX_VERSION));
         }};
     }
 
@@ -40,7 +40,7 @@ public class CalculationMatrixRow extends VlocityArtifact {
 
     @Override
     public String getSObjectTypeName() {
-        return "CalculationMatrixRow__c";
+        return "CalculationMatrix__c";
     }
 
     @Override
@@ -48,4 +48,5 @@ public class CalculationMatrixRow extends VlocityArtifact {
 
     @Override
     public Boolean hasDataPack() { return false; }
+
 }

@@ -4,6 +4,9 @@ import client.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sforce.ws.ConnectionException;
+import logging.ILogHandler;
+import logging.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -17,7 +20,7 @@ import java.util.List;
 /**
  * Created by Derek on 01/07/2016.
  */
-public class Deploy extends Task {
+public class Deploy extends Task implements ILogHandler {
     private String username;
     private String password;
     private String sessionId;
@@ -87,6 +90,10 @@ public class Deploy extends Task {
 
     private HashMap<String, List<String>> AllFiles;
 
+    public Deploy() {
+        Logger.RegisterHandler(this);
+    }
+
     public void execute() throws BuildException {
         try {
             initialiseClient();
@@ -119,7 +126,7 @@ public class Deploy extends Task {
         log("Logged in to Salesforce.com", Project.MSG_INFO);
     }
 
-    private ArrayList<VlocityArtifact> retrieveArtifacts(String extension, ArtifactTypesEnum artifactType) throws ArtifactNotSupportedException, IOException {
+    private ArrayList<VlocityArtifact> retrieveArtifacts(String extension, ArtifactTypeEnum artifactType) throws ArtifactNotSupportedException, IOException {
         log("Reading " + extension + " files...", Project.MSG_INFO);
 
         ArrayList<VlocityArtifact> artifacts = new ArrayList<>();
@@ -166,5 +173,21 @@ public class Deploy extends Task {
 
             AllFiles.get(ext).add(fileName);
         }
+    }
+
+    public void ProcessItem(String item, Logger.Severity severity) {
+        Integer projectSeverity = Project.MSG_INFO;
+
+        if (severity == Logger.Severity.Fatal || severity == Logger.Severity.Error) {
+            projectSeverity = Project.MSG_ERR;
+        }
+        else if (severity == Logger.Severity.Warning) {
+            projectSeverity = Project.MSG_WARN;
+        }
+        else if (severity == Logger.Severity.Verbose) {
+            projectSeverity = Project.MSG_VERBOSE;
+        }
+
+        log(item, projectSeverity);
     }
 }

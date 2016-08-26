@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
@@ -6,7 +6,7 @@ import com.google.gson.internal.LinkedTreeMap;
 /**
  * Created by Derek on 13/07/2016.
  */
-public class DataPackRequest extends client.DataPackRequest{
+public class DataPackRequest extends client.DataPackRequest {
     public String processType;
     public RequestDetails processData;
 
@@ -18,13 +18,13 @@ public class DataPackRequest extends client.DataPackRequest{
         public LinkedTreeMap VlocityDataPackData;
     }
 
-    public DataPackRequest(String operation, String vlocityDataPackType) {
-        this.processType = operation;
+    public DataPackRequest(client.DataPackRequest.RequestTypeEnum requestType, String vlocityDataPackType) {
+        this.processType = requestType.name();
         this.processData = new RequestDetails();
         this.processData.VlocityDataPackType = vlocityDataPackType;
     }
 
-    public DataPackRequest(RequestTypeEnum requestType, String vlocityDataPackType, String vlocityDataPackDataId) {
+    public DataPackRequest(client.DataPackRequest.RequestTypeEnum requestType, String vlocityDataPackType, String vlocityDataPackDataId) {
         this.processType = requestType.name();
         this.processData = new RequestDetails();
         this.processData.VlocityDataPackType = vlocityDataPackType;

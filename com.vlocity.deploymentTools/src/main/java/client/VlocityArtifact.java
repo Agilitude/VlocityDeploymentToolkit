@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
+import logging.Logger;
 
 /**
  * Created by Derek on 16/06/2016.
@@ -54,7 +55,11 @@ public abstract class VlocityArtifact {
     public abstract String getDataPackType();
     public abstract Boolean hasDataPack();
 
-    public VlocityArtifact(ArtifactTypesEnum artifactType, String packageName, String packageVersion)
+    public Boolean isPackageMember() {
+        return true;
+    }
+
+    public VlocityArtifact(ArtifactTypeEnum artifactType, String packageName, String packageVersion)
     {
         this.ArtifactType = artifactType.toString();
         this.PackageName = packageName;
@@ -124,7 +129,7 @@ public abstract class VlocityArtifact {
 
     public void setProperties(XmlObject record) throws ParseException, ArtifactNotSupportedException, PackageNotSupportedException, VersionNotSupportedException {
         for (VlocityArtifactFieldDefinition field : this.FieldDefinitions) {
-            String sObjectFieldName = getQualifiedName(field.SObjectFieldName);
+            String sObjectFieldName = getQualifiedName(field.SObjectFieldName, field.IsPackageMember);
 
             Object value = null;
 
@@ -135,7 +140,13 @@ public abstract class VlocityArtifact {
                 }
             }
             else if (field.FieldType == FieldTypeEnum.JSON_STRING) {
-                value = getJsonStringValue(record, sObjectFieldName);
+                try {
+                    value = getJsonStringValue(record, sObjectFieldName);
+                }
+                catch (Exception ex) {
+                    value = getStringValue(record, sObjectFieldName);
+                    Logger.LogAsync("Value of field '" + sObjectFieldName + "', '" + value  + "', on record '" + record.getName() + "' is not a valid JSON string", Logger.Severity.Error);
+                }
             }
             else if (field.FieldType == FieldTypeEnum.INT) {
                 value = getIntValue(record, sObjectFieldName);
@@ -164,7 +175,7 @@ public abstract class VlocityArtifact {
 
     public SObject ToSObject() {
         SObject sObject = new SObject();
-        sObject.setType(this.getQualifiedName(this.getSObjectTypeName()));
+        sObject.setType(this.getQualifiedName(this.getSObjectTypeName(), this.isPackageMember()));
 
         for (VlocityArtifactFieldDefinition field : this.FieldDefinitions) {
             if (field.FieldType == FieldTypeEnum.JSON_STRING) {
@@ -180,7 +191,11 @@ public abstract class VlocityArtifact {
     }
 
     protected String getQualifiedName(String name) {
-        if (!name.endsWith("__c") && !name.endsWith("__r")) return name;
+        return getQualifiedName(name, true);
+    }
+
+    protected String getQualifiedName(String name, Boolean isPackageMember) {
+        if (!isPackageMember) return name;
         return this.PackageName + "__" + name;
     }
 
@@ -190,27 +205,29 @@ public abstract class VlocityArtifact {
         public String PropertyName;
         public Boolean IsKey = false;
         public Boolean Serialise = true;
-        public ArtifactTypesEnum ListElementTypeName;
+        public Boolean IsPackageMember = true;
+        public ArtifactTypeEnum ListElementTypeName;
 
         public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType) {
-            this(sObjectFieldName, propertyName, fieldType, false, true);
+            this(sObjectFieldName, propertyName, fieldType, false, true, true);
         }
 
-        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, ArtifactTypesEnum listElementTypeName) {
-            this(sObjectFieldName, propertyName, fieldType, listElementTypeName, false, true);
+        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, ArtifactTypeEnum listElementTypeName) {
+            this(sObjectFieldName, propertyName, fieldType, listElementTypeName, false, true, true);
         }
 
-        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, Boolean isKey, Boolean serialise) {
-            this(sObjectFieldName, propertyName, fieldType, null, isKey, serialise);
+        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, Boolean isKey, Boolean serialise, Boolean isPackageMember) {
+            this(sObjectFieldName, propertyName, fieldType, null, isKey, serialise, isPackageMember);
         }
 
-        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, ArtifactTypesEnum listElementTypeName, Boolean isKey, Boolean serialise) {
+        public VlocityArtifactFieldDefinition(String sObjectFieldName, String propertyName, FieldTypeEnum fieldType, ArtifactTypeEnum listElementTypeName, Boolean isKey, Boolean serialise, Boolean isPackageMember) {
             this.FieldType = fieldType;
             this.SObjectFieldName = sObjectFieldName;
             this.PropertyName = propertyName;
             this.ListElementTypeName = listElementTypeName;
             this.IsKey = isKey;
             this.Serialise = serialise;
+            this.IsPackageMember = isPackageMember;
         }
     }
 
@@ -258,11 +275,16 @@ public abstract class VlocityArtifact {
     }
 
     public static OffsetDateTime getDateTimeValue(XmlObject record, String fieldName) {
+        String value = (String)record.getField(fieldName);
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+
         DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        return OffsetDateTime.parse((String)record.getField(fieldName), fmt);
+        return OffsetDateTime.parse(value, fmt);
     }
 
-    public static ArrayList<VlocityArtifact> getChildElements (XmlObject record, String fieldName, ArtifactTypesEnum elementTypeName, String packageName, String packageVersion) throws PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, ParseException {
+    public static ArrayList<VlocityArtifact> getChildElements (XmlObject record, String fieldName, ArtifactTypeEnum elementTypeName, String packageName, String packageVersion) throws PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, ParseException {
 
         XmlObject listOfElements = (XmlObject)record.getField(fieldName);
         if (listOfElements == null) {
@@ -292,17 +314,17 @@ public abstract class VlocityArtifact {
     }
 
     private SoqlQueryStringBuilder getQueryStringBuilder(Integer currentRelationshipDept) throws PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException {
-        SoqlQueryStringBuilder builder = new SoqlQueryStringBuilder(getQualifiedName(this.getSObjectTypeName()));
+        SoqlQueryStringBuilder builder = new SoqlQueryStringBuilder(getQualifiedName(this.getSObjectTypeName(), this.isPackageMember()));
 
         for (VlocityArtifactFieldDefinition field : this.FieldDefinitions) {
             if (field.FieldType == FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT) {
                 if (currentRelationshipDept < MAX_RELATIONSHIP_DEPTH) {
                     VlocityArtifact child = VlocityPackageFactory.getPackage(null, this.PackageName, this.PackageVersion).InitialiseArtifact(field.ListElementTypeName);
-                    builder.AddSubQuery(getQualifiedName(field.SObjectFieldName), child.getQueryStringBuilder(currentRelationshipDept + 1));
+                    builder.AddSubQuery(getQualifiedName(field.SObjectFieldName, field.IsPackageMember), child.getQueryStringBuilder(currentRelationshipDept + 1));
                 }
             }
             else {
-                builder.AddField(getQualifiedName(field.SObjectFieldName));
+                builder.AddField(getQualifiedName(field.SObjectFieldName, field.IsPackageMember));
             }
         }
 

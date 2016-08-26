@@ -2,8 +2,6 @@ package client;
 
 import com.sforce.soap.metadata.*;
 import com.sforce.soap.partner.*;
-import com.sforce.soap.partner.UpsertResult;
-import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import com.sforce.ws.SessionRenewer;
@@ -39,32 +37,17 @@ public class VlocityClient {
         initialiseVersionInformation();
     }
 
-    public ArrayList<VlocityArtifact> QueryOmniscripts(String username) throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.OMNISCRIPT, username);
+    public ArrayList<VlocityArtifact> QueryArtifacts(ArtifactTypeEnum type, String username) throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
+        return vlPackage.GetArtifacts(type, username);
     }
 
-    public ArrayList<VlocityArtifact> QueryDataRaptors(String username)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.DATARAPTOR, username);
+    public ArrayList<VlocityArtifact> QueryArtifacts(ArtifactTypeEnum type, ArrayList<String> names)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
+        return vlPackage.GetArtifacts(type, names);
     }
 
-    public ArrayList<VlocityArtifact> QueryCalculationMatrices(String username)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.CALCULATION_MATRIX, username);
-    }
 
-    public ArrayList<VlocityArtifact> QueryOmniscripts(ArrayList<String> names) throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.OMNISCRIPT, names);
-    }
-
-    public ArrayList<VlocityArtifact> QueryDataRaptors(ArrayList<String> names)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.DATARAPTOR, names);
-    }
-
-    public ArrayList<VlocityArtifact> QueryCalculationMatrices(ArrayList<String> names)throws ConnectionException, ParseException, PackageNotSupportedException, VersionNotSupportedException, ArtifactNotSupportedException, Exception {
-        return vlPackage.GetArtifacts(ArtifactTypesEnum.CALCULATION_MATRIX, names);
-    }
-
-    public Class GetArtifactClass(ArtifactTypesEnum artifactType) throws ArtifactNotSupportedException {
-        return vlPackage.GetArtifactClass(artifactType);
+    public Class GetArtifactClass(ArtifactTypeEnum artifactType) throws ArtifactNotSupportedException {
+        return vlPackage.getArtifactClass(artifactType);
     }
 
     public void Deploy(ArrayList<VlocityArtifact> artifacts) throws client.UnexpectedResponseException, client.UnexpectedDataPackException, IOException {
@@ -75,7 +58,7 @@ public class VlocityClient {
         ListMetadataQuery lmq = new ListMetadataQuery();
         lmq.setType("InstalledPackage");
 
-        FileProperties[] fileProperties = getMetadataApiConnection().listMetadata(new ListMetadataQuery[]{lmq}, 36.0);
+        FileProperties[] fileProperties = getMetadataApiConnection().listMetadata(new ListMetadataQuery[]{lmq}, 37.0);
 
         for (FileProperties fp : fileProperties) {
             if (VlocityPackageFactory.isSupported(fp.getFullName())) {
@@ -106,6 +89,8 @@ public class VlocityClient {
         config.setAuthEndpoint(serverUrl);
         config.setUsername(username);
         config.setPassword(password);
+        config.setReadTimeout(120000);
+        config.setConnectionTimeout(120000);
 
         this.partnerApiConnection = new PartnerConnection(config);
 

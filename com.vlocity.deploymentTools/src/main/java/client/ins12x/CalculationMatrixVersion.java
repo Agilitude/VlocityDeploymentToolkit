@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
@@ -13,13 +13,13 @@ public class CalculationMatrixVersion extends VlocityArtifact {
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("IsEnabled__c", "IsEnabled", FieldTypeEnum.BOOLEAN));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("EndDateTime__c", "EndDateTime", FieldTypeEnum.DATETIME));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Priority__c", "Priority", FieldTypeEnum.INT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("StartDateTime__c", "StartDateTime", FieldTypeEnum.DATETIME));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("VersionNumber__c", "Version", FieldTypeEnum.INT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Vlocity_Calculation_Table_Line_Items__r", "Rows", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.CALCULATION_MATRIX_ROW));
+            add(new VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
+            add(new VlocityArtifactFieldDefinition("IsEnabled__c", "IsEnabled", FieldTypeEnum.BOOLEAN));
+            add(new VlocityArtifactFieldDefinition("EndDateTime__c", "EndDateTime", FieldTypeEnum.DATETIME));
+            add(new VlocityArtifactFieldDefinition("Priority__c", "Priority", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("StartDateTime__c", "StartDateTime", FieldTypeEnum.DATETIME));
+            add(new VlocityArtifactFieldDefinition("VersionNumber__c", "Version", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("Vlocity_Calculation_Table_Line_Items__r", "Rows", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.CALCULATION_MATRIX_ROW));
         }};
     }
 

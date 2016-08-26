@@ -28,7 +28,7 @@ public class VlocityArtifactDeserialiser implements JsonDeserializer<VlocityArti
             throw new JsonParseException(new RequiredFieldMissingException(VlocityArtifact.PACKAGE_VERSION_KEY_NAME));
         }
 
-        ArtifactTypesEnum artifactType = ArtifactTypesEnum.valueOf(jsObj.get(VlocityArtifact.ARTIFACT_TYPE_KEY_NAME).getAsString());
+        ArtifactTypeEnum artifactType = ArtifactTypeEnum.valueOf(jsObj.get(VlocityArtifact.ARTIFACT_TYPE_KEY_NAME).getAsString());
         String packageName = jsObj.get(VlocityArtifact.PACKAGE_NAME_KEY_NAME).getAsString();
         String packageVersion = jsObj.get(VlocityArtifact.PACKAGE_VERSION_KEY_NAME).getAsString();
 

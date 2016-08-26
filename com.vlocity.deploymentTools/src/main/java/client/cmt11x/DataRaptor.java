@@ -1,6 +1,6 @@
 package client.cmt11x;
 
-import client.ArtifactTypesEnum;
+import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
 
 import java.util.ArrayList;
@@ -9,11 +9,11 @@ import java.util.ArrayList;
  * Created by Derek on 29/06/2016.
  */
 public class DataRaptor extends VlocityArtifact{
-    public DataRaptor(ArtifactTypesEnum artifactType, String packageName, String packageVersion) {
+    public DataRaptor(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, true, true));
+            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, true, true, true));
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("BatchSize__c", "BatchSize", FieldTypeEnum.INT));
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("DRMapName__c", "MapName", FieldTypeEnum.STRING));
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("DeleteOnSuccess__c", "DeleteOnSuccess", FieldTypeEnum.BOOLEAN));

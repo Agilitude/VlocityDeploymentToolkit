@@ -5,6 +5,6 @@ package client;
  */
 public class ArtifactNotSupportedException extends Exception {
     public ArtifactNotSupportedException(String artifactType) {
-        super(String.format("Artifact %1s is not support"));
+        super(String.format("Artifact %1s is not support", artifactType));
     }
 }

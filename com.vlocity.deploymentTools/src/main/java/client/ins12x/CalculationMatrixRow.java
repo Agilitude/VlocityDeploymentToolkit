@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
@@ -13,8 +13,8 @@ public class CalculationMatrixRow extends VlocityArtifact {
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("InputData__c", "InputData", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("OutputData__c", "OutputData", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("InputData__c", "InputData", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("OutputData__c", "OutputData", FieldTypeEnum.STRING));
         }};
     }
 

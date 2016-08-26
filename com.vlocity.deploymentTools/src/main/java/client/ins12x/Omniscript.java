@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.CorruptedDataException;
@@ -17,21 +17,21 @@ public class Omniscript extends VlocityArtifact {
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Version__c", "Version", FieldTypeEnum.INT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Language__c", "Language", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("IsActive__c", "IsActive", FieldTypeEnum.BOOLEAN));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("AdditionalInformation__c", "AdditionalInformation", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("CustomJavaScript__c", "CustomJavaScript", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("DataRaptorBundleName__c", "DataRaptorBundleName", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("JSON_Output__c", "JsonOutput", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("PropertySet__c", "PropertySet", FieldTypeEnum.JSON_STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("IsReusable__c", "IsReusable", FieldTypeEnum.BOOLEAN));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("SubType__c", "SubType", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("TestHTMLTemplates__c", "TestHTMLTemplates", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Type__c", "Type", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Elements__r", "Elements", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.ELEMENT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("OmniScriptDefinitions__r", "CompiledDefinitions", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.COMPILED_OUTPUT));
+            add(new VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
+            add(new VlocityArtifactFieldDefinition("Version__c", "Version", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("Language__c", "Language", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("IsActive__c", "IsActive", FieldTypeEnum.BOOLEAN));
+            add(new VlocityArtifactFieldDefinition("AdditionalInformation__c", "AdditionalInformation", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("CustomJavaScript__c", "CustomJavaScript", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("DataRaptorBundleName__c", "DataRaptorBundleName", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("JSON_Output__c", "JsonOutput", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("PropertySet__c", "PropertySet", FieldTypeEnum.JSON_STRING));
+            add(new VlocityArtifactFieldDefinition("IsReusable__c", "IsReusable", FieldTypeEnum.BOOLEAN));
+            add(new VlocityArtifactFieldDefinition("SubType__c", "SubType", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("TestHTMLTemplates__c", "TestHTMLTemplates", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("Type__c", "Type", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("Elements__r", "Elements", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.ELEMENT));
+            add(new VlocityArtifactFieldDefinition("OmniScriptDefinitions__r", "CompiledDefinitions", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.COMPILED_OUTPUT));
         }};
     }
 

@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
@@ -22,9 +22,9 @@ public class CompiledDefinition extends VlocityArtifact implements Comparable<Co
         super(artifactType, packageName, packageVersion);
 
         this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Content__c", "Content", FieldTypeEnum.JSON_STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Sequence__c", "Sequence", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("Name", "Name", FieldTypeEnum.STRING, false, true, false));
+            add(new VlocityArtifactFieldDefinition("Content__c", "Content", FieldTypeEnum.JSON_STRING));
+            add(new VlocityArtifactFieldDefinition("Sequence__c", "Sequence", FieldTypeEnum.INT));
         }};
     }
 

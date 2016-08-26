@@ -1,4 +1,4 @@
-package client.cmt11x;
+package client.ins12x;
 
 import client.ArtifactTypeEnum;
 import client.VlocityArtifact;
@@ -52,16 +52,17 @@ public class Element extends VlocityArtifact implements Comparable<Element> {
     public Element(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
         super(artifactType, packageName, packageVersion);
 
-        this.FieldDefinitions = new ArrayList<VlocityArtifact.VlocityArtifactFieldDefinition>() {{
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Id", "Id", FieldTypeEnum.STRING, false, false, false));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Active__c", "Active", FieldTypeEnum.BOOLEAN));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Level__c", "Level", FieldTypeEnum.INT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Order__c", "Order", FieldTypeEnum.INT));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("PropertySet__c", "PropertySet", FieldTypeEnum.JSON_STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("SearchKey__c", "SearchKey", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Type__c", "Type", FieldTypeEnum.STRING));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("ParentElementId__c", "ParentId", FieldTypeEnum.STRING, false, false, true));
-            add(new VlocityArtifact.VlocityArtifactFieldDefinition("Elements__r", "ChildElements", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.ELEMENT));
+        this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
+            add(new VlocityArtifactFieldDefinition("Id", "Id", FieldTypeEnum.STRING, false, false, false));
+            add(new VlocityArtifactFieldDefinition("Active__c", "Active", FieldTypeEnum.BOOLEAN));
+            add(new VlocityArtifactFieldDefinition("Level__c", "Level", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("Order__c", "Order", FieldTypeEnum.INT));
+            add(new VlocityArtifactFieldDefinition("InternalNotes__c", "InternalNotes", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("PropertySet__c", "PropertySet", FieldTypeEnum.JSON_STRING));
+            add(new VlocityArtifactFieldDefinition("SearchKey__c", "SearchKey", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("Type__c", "Type", FieldTypeEnum.STRING));
+            add(new VlocityArtifactFieldDefinition("ParentElementId__c", "ParentId", FieldTypeEnum.STRING, false, false, true));
+            add(new VlocityArtifactFieldDefinition("Elements__r", "ChildElements", FieldTypeEnum.LIST_OF_VLOCITY_ARTIFACT, ArtifactTypeEnum.ELEMENT));
         }};
     }
 

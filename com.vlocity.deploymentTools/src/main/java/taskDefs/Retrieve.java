@@ -3,35 +3,45 @@ package taskDefs;
 import client.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import logging.ILogHandler;
+import logging.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.Project;
 import com.sforce.ws.ConnectionException;
+import storage.ICommitHandler;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * Created by Derek Choate on 25/05/2016.
  */
-public class Retrieve extends Task {
+public class Retrieve extends Task implements ILogHandler, ICommitHandler {
 
     private String username;
     private String password;
-    private String sessionId;
+    //private String sessionId;
     private String serverurl;
-    private String retrieveTarget;
-    private String packageNames;
-    private String apiVersion;
-    private Integer pollWaitMillis;
-    private Integer maxPoll;
-    private Boolean singlePackage;
-    private Boolean trace;
+    //private String retrieveTarget;
+    //private String packageNames;
+    //private String apiVersion;
+    //private Integer pollWaitMillis;
+    //private Integer maxPoll;
+    //private Boolean singlePackage;
+    //private Boolean trace;
     private String unpackaged;
-    private Boolean unzip;
+    private String artifacts = String.join(",", Constants.SUPPORTED_PRIMARY_ARTIFACTS);
+    //private Boolean unzip;
     private VlocityClient client;
     private String extractLastModifiedBy;
+
+    public Retrieve() {
+        logging.Logger.RegisterHandler(this);
+    }
 
     public void setUsername (String username) {
         this.username = username;
@@ -41,74 +51,85 @@ public class Retrieve extends Task {
         this.password = password;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
+    //public void setSessionId(String sessionId) {
+    //    this.sessionId = sessionId;
+    //}
 
     public void setServerurl(String serverurl) {
         this.serverurl = serverurl;
     }
 
-    public void setRetrieveTarget(String retrieveTarget) {
-        this.retrieveTarget = retrieveTarget;
-    }
+//    public void setRetrieveTarget(String retrieveTarget) {
+//        this.retrieveTarget = retrieveTarget;
+//    }
+//
+//    public void setPackageNames(String packageNames) {
+//        this.packageNames = packageNames;
+//    }
 
-    public void setPackageNames(String packageNames) {
-        this.packageNames = packageNames;
-    }
+//    public void setApiVersion(String apiVersion) {
+//        this.apiVersion = apiVersion;
+//    }
 
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
+//    public void setPollWaitMillis(Integer pollWaitMillis) {
+//        this.pollWaitMillis = pollWaitMillis;
+//    }
 
-    public void setPollWaitMillis(Integer pollWaitMillis) {
-        this.pollWaitMillis = pollWaitMillis;
-    }
+//    public void setMaxPoll(Integer maxPoll) {
+//        this.maxPoll = maxPoll;
+//    }
 
-    public void setMaxPoll(Integer maxPoll) {
-        this.maxPoll = maxPoll;
-    }
+//    public void setSinglePackage(Boolean singlePackage) {
+//        this.singlePackage = singlePackage;
+//    }
 
-    public void setSinglePackage(Boolean singlePackage) {
-        this.singlePackage = singlePackage;
-    }
-
-    public void setTrace(Boolean trace) {
-        this.trace = trace;
-    }
+//    public void setTrace(Boolean trace) {
+//        this.trace = trace;
+//    }
 
     public void setUnpackaged(String unpackaged) {
         this.unpackaged = unpackaged;
     }
 
-    public void setUnzip(Boolean unzip) {
-        this.unzip = unzip;
+//    public void setUnzip(Boolean unzip) {
+//        this.unzip = unzip;
+//    }
+
+    public void setArtifacts(String artifacts) {
+        this.artifacts = artifacts;
     }
 
     public void setExtractLastModifiedBy(String extractLastModifiedBy) {this.extractLastModifiedBy = extractLastModifiedBy;}
 
     public void execute() throws BuildException {
         try {
+
             initialiseClient();
 
-            ArrayList<VlocityArtifact> omniscripts;
-            ArrayList<VlocityArtifact> dataRaptors;
-            ArrayList<VlocityArtifact> matrices;
+            HashMap<ArtifactTypeEnum, ArrayList<VlocityArtifact>> artifactsMappedToType = new HashMap<>();
 
-            if (extractLastModifiedBy != null && !extractLastModifiedBy.isEmpty()) {
-                omniscripts = retrieveOmniscripts(extractLastModifiedBy);
-                dataRaptors = retrieveDataRaptors(extractLastModifiedBy);
-                matrices = retrieveMatrices(extractLastModifiedBy);
-            }
-            else {
-                omniscripts = retrieveOmniscripts(new ArrayList<>());
-                dataRaptors = retrieveDataRaptors(new ArrayList<>());
-                matrices = retrieveMatrices(new ArrayList<>());
+            for (String artifact : artifacts.split(",")) {
+
+                if (!Constants.SUPPORTED_PRIMARY_ARTIFACTS.contains(artifact)) {
+                    log("Skipping '" + artifact + "' because is not supported.  Supported artifacts are " + String.join(", ", Constants.SUPPORTED_PRIMARY_ARTIFACTS), Project.MSG_ERR);
+                    continue;
+                }
+
+                log("Reading " + artifact + "...", Project.MSG_INFO);
+
+                ArtifactTypeEnum artifactType = ArtifactTypeEnum.valueOf(artifact);
+
+                if (this.extractLastModifiedBy != null && !this.extractLastModifiedBy.isEmpty()) {
+                    artifactsMappedToType.put(artifactType, client.QueryArtifacts(artifactType, this.extractLastModifiedBy));
+                }
+                else {
+                    artifactsMappedToType.put(artifactType, client.QueryArtifacts(artifactType, new ArrayList<String>()));
+                }
             }
 
-            writeFiles(omniscripts, Constants.OMNISCRIPT_EXT);
-            writeFiles(dataRaptors, Constants.DATARAPTOR_EXT);
-            writeFiles(matrices, Constants.CALCULATIONMATRIX_EXT);
+            for (ArtifactTypeEnum artifactType : artifactsMappedToType.keySet()) {
+                //writeFiles(artifactsMappedToType.get(artifactType), Constants.EXTENSIONS_MAPPED_TO_ARTIFACT_TYPE.get(artifactType));
+            }
 
         } catch (ConnectionException e) {
             log("The following ConnectionException exception was thrown", Project.MSG_ERR);
@@ -130,36 +151,6 @@ public class Retrieve extends Task {
         client.Login(this.username, this.password, this.serverurl);
 
         log("Logged in to Salesforce.com", Project.MSG_INFO);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveOmniscripts(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading Omniscripts", Project.MSG_INFO);
-        return client.QueryOmniscripts(username);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveDataRaptors(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading DataRaptors", Project.MSG_INFO);
-        return client.QueryDataRaptors(username);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveMatrices(String username) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading Calculation Matrices", Project.MSG_INFO);
-        return client.QueryCalculationMatrices(username);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveOmniscripts(ArrayList<String> names) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading Omniscripts", Project.MSG_INFO);
-        return client.QueryOmniscripts(names);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveDataRaptors(ArrayList<String> names) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading DataRaptors", Project.MSG_INFO);
-        return client.QueryDataRaptors(names);
-    }
-
-    private ArrayList<VlocityArtifact> retrieveMatrices(ArrayList<String> names) throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, ArtifactNotSupportedException, Exception {
-        log("Reading Calculation Matrices", Project.MSG_INFO);
-        return client.QueryCalculationMatrices(names);
     }
 
     private void writeFiles(ArrayList<VlocityArtifact> artifacts, String artifactType) throws IOException {
@@ -195,4 +186,31 @@ public class Retrieve extends Task {
 
     }
 
+    public void ProcessItem(String item, Logger.Severity severity) {
+        Integer projectSeverity = Project.MSG_INFO;
+
+        if (severity == Logger.Severity.Fatal || severity == Logger.Severity.Error) {
+            projectSeverity = Project.MSG_ERR;
+        }
+        else if (severity == Logger.Severity.Warning) {
+            projectSeverity = Project.MSG_WARN;
+        }
+        else if (severity == Logger.Severity.Verbose) {
+            projectSeverity = Project.MSG_VERBOSE;
+        }
+
+        log(item, projectSeverity);
+    }
+
+    @Override
+    public void HandleCommit(VlocityArtifact artifact) {
+        try {
+            writeFiles(new ArrayList<VlocityArtifact>() {{
+                add(artifact);
+            }}, Constants.EXTENSIONS_MAPPED_TO_ARTIFACT_TYPE.get(artifact.ArtifactType));
+        }
+        catch (IOException e) {
+            log(e.getMessage() + "\n" + e.getStackTrace().toString(), Project.MSG_ERR);
+        }
+    }
 }

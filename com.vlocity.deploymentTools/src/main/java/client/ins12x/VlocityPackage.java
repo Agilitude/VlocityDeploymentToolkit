@@ -1,6 +1,9 @@
-package client.cmt11x;
+package client.ins12x;
 
-import client.*;
+import client.ArtifactNotSupportedException;
+import client.ArtifactTypeEnum;
+import client.VlocityArtifact;
+import client.VlocityClient;
 
 /**
  * Created by Derek on 16/06/2016.
@@ -16,7 +19,7 @@ public class VlocityPackage extends client.VlocityPackage {
 
     @Override
     public String getPackageName() {
-        return "vlocity_cmt";
+        return "vlocity_ins";
     }
 
     @Override
@@ -30,7 +33,7 @@ public class VlocityPackage extends client.VlocityPackage {
 
     @Override
     public String getDatapackStub() {
-        return "/services/apexrest/vlocity_cmt/v1/VlocityDataPacks/";
+        return "/services/apexrest/vlocity_ins/v1/VlocityDataPacks/";
     }
 
     @Override
@@ -58,6 +61,12 @@ public class VlocityPackage extends client.VlocityPackage {
         else if (artifactType == artifactType.CALCULATION_MATRIX_ROW) {
             return initialiseCalculationMatrixRow();
         }
+        else if (artifactType == artifactType.APPLICATION_TEMPLATE) {
+            return initialiseApplicationTemplate();
+        }
+        else if (artifactType == artifactType.CARD) {
+            return initialiseCard();
+        }
 
         throw new ArtifactNotSupportedException(artifactType.toString());
     }
@@ -72,6 +81,12 @@ public class VlocityPackage extends client.VlocityPackage {
         }
         else if (artifactTypeName == ArtifactTypeEnum.CALCULATION_MATRIX) {
             return CalculationMatrix.class;
+        }
+        else if (artifactTypeName == ArtifactTypeEnum.APPLICATION_TEMPLATE) {
+            return ApplicationTemplate.class;
+        }
+        else if (artifactTypeName == ArtifactTypeEnum.CARD) {
+            return Card.class;
         }
         else {
             throw new ArtifactNotSupportedException(artifactTypeName.toString());
@@ -108,6 +123,14 @@ public class VlocityPackage extends client.VlocityPackage {
 
     public VlocityArtifact initialiseCalculationMatrixRow() {
         return new CalculationMatrixRow(ArtifactTypeEnum.CALCULATION_MATRIX_ROW, this.getPackageName(), this.getPackageVersion());
+    }
+
+    public VlocityArtifact initialiseApplicationTemplate() {
+        return new ApplicationTemplate(ArtifactTypeEnum.APPLICATION_TEMPLATE, this.getPackageName(), this.getPackageVersion());
+    }
+
+    public VlocityArtifact initialiseCard() {
+        return new Card(ArtifactTypeEnum.CARD, this.getPackageName(), this.getPackageVersion());
     }
 
     public DataPackRequest InitialiseDataPackRequest(client.DataPackRequest.RequestTypeEnum requestType, VlocityArtifact artifact, String artifactRecordId) {

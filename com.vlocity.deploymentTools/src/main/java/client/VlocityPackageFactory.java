@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class VlocityPackageFactory {
 
-    private static final Set<String> supportedPackages = new HashSet<>(Arrays.asList("vlocity_cmt"));
+    private static final Set<String> supportedPackages = new HashSet<>(Arrays.asList("vlocity_cmt","vlocity_ins"));
 
     public static VlocityPackage getPackage(VlocityClient client, String packageName, String packageVersion) throws PackageNotSupportedException, VersionNotSupportedException {
         if (!isSupported(packageName)) {
@@ -20,8 +20,18 @@ public class VlocityPackageFactory {
             throw new VersionNotSupportedException(packageName, packageVersion);
         }
 
-        if ("vlocity_cmt".equals(packageName) && "11".equals(getMajorVersion(packageVersion))) {
+        String majorVersion = getMajorVersion(packageVersion);
+
+        if ("vlocity_cmt".equals(packageName) && "11".equals(majorVersion)) {
             client.cmt11x.VlocityPackage vpack = new client.cmt11x.VlocityPackage(client);
+
+            vpack.setPackageVersion(packageVersion);
+
+            return vpack;
+        }
+
+        if ("vlocity_ins".equals(packageName) && ("12".equals(majorVersion) || "888".equals(majorVersion))) {
+            client.ins12x.VlocityPackage vpack = new client.ins12x.VlocityPackage(client);
 
             vpack.setPackageVersion(packageVersion);
 
@@ -41,7 +51,12 @@ public class VlocityPackageFactory {
     }
 
     public static Boolean isSupported(String packageName, String packageVersion) {
-        if ("vlocity_cmt".equals(packageName) && "11".equals(getMajorVersion(packageVersion))) {
+        String majorVersion = getMajorVersion(packageVersion);
+
+        if ("vlocity_cmt".equals(packageName) && "11".equals(majorVersion)) {
+            return true;
+        }
+        if ("vlocity_ins".equals(packageName) && ("12".equals(majorVersion) || "888".equals(majorVersion))) {
             return true;
         }
 

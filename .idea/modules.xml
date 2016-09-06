@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit.iml" filepath="$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit_main.iml" filepath="$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit_main.iml" group="VlocityDeploymentToolkit" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit_test.iml" filepath="$PROJECT_DIR$/.idea/modules/VlocityDeploymentToolkit_test.iml" group="VlocityDeploymentToolkit" />
       <module fileurl="file://$PROJECT_DIR$/com.vlocity.deploymentTools.taskDefs.iml" filepath="$PROJECT_DIR$/com.vlocity.deploymentTools.taskDefs.iml" />
     </modules>
   </component>

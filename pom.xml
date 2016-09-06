@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.vlocity.deploymentTools</groupId>
-    <artifactId>com.vlocity.deploymentTools.taskDefs</artifactId>
-    <version>0.1-INITIAL</version>
+    <artifactId>vlocityDeploymentTool</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

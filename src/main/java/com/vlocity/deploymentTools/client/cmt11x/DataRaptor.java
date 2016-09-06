@@ -1,14 +1,14 @@
-package client.cmt11x;
+package com.vlocity.deploymentTools.client.cmt11x;
 
-import client.ArtifactTypeEnum;
-import client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
 
 import java.util.ArrayList;
 
 /**
  * Created by Derek on 29/06/2016.
  */
-public class DataRaptor extends VlocityArtifact{
+public class DataRaptor extends VlocityArtifact {
     public DataRaptor(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
         super(artifactType, packageName, packageVersion);
 

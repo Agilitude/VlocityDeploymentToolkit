@@ -1,7 +1,6 @@
-package storage;
+package com.vlocity.deploymentTools.storage;
 
-import client.ArtifactTypeEnum;
-import client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
 
 /**
  * Created by Derek on 26/08/2016.

@@ -1,17 +1,26 @@
-package taskDefs;
+package com.vlocity.deploymentTools.taskDefs;
 
-import client.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sforce.ws.ConnectionException;
-import logging.ILogHandler;
-import logging.Logger;
-import org.apache.commons.logging.Log;
+import com.vlocity.deploymentTools.client.ArtifactNotSupportedException;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.PackageNotFoundException;
+import com.vlocity.deploymentTools.client.PackageNotSupportedException;
+import com.vlocity.deploymentTools.client.VersionNotSupportedException;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.VlocityArtifactDeserialiser;
+import com.vlocity.deploymentTools.client.VlocityClient;
+import com.vlocity.deploymentTools.logging.ILogHandler;
+import com.vlocity.deploymentTools.logging.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;

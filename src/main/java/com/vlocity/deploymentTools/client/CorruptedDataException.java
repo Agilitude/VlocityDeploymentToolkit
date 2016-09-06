@@ -1,4 +1,4 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 /**
  * Created by Derek on 29/06/2016.

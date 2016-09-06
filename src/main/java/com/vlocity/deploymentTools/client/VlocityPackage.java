@@ -1,25 +1,11 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.internal.LinkedTreeMap;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.sobject.SObject;
-import logging.Logger;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import com.vlocity.deploymentTools.logging.Logger;
+import sun.util.logging.resources.logging;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -92,19 +78,19 @@ public abstract class VlocityPackage {
                     VlocityArtifact artifact = InitialiseArtifact(artifactType);
                     artifact.setProperties(record);
 
-                    if (artifact.hasDataPack()) {
+                    if (artifact.hasDataPack() && Client.ReadDataPacks) {
                         try {
                             artifact.Datapack = dpClient.getDatapack(artifact, record.getId());
                         }
                         catch (UnexpectedDataPackException ex) {
                             artifact.Datapack = null;
-                            logging.Logger.LogAsync("Unable to read DataPack for " + artifactType.name() + " " + record.getId(), Logger.Severity.Warning);
-                            logging.Logger.LogAsync(ex.getMessage(), Logger.Severity.Error);
+                            Logger.LogAsync("Unable to read DataPack for " + artifactType.name() + " " + record.getId(), Logger.Severity.Warning);
+                            Logger.LogAsync(ex.getMessage(), Logger.Severity.Error);
                         }
                         catch (UnexpectedResponseException ex) {
                             artifact.Datapack = null;
-                            logging.Logger.LogAsync("Unable to read DataPack for " + artifactType.name() + " " + record.getId(), Logger.Severity.Warning);
-                            logging.Logger.LogAsync(ex.getMessage(), Logger.Severity.Error);
+                            Logger.LogAsync("Unable to read DataPack for " + artifactType.name() + " " + record.getId(), Logger.Severity.Warning);
+                            Logger.LogAsync(ex.getMessage(), Logger.Severity.Error);
                         }
                     }
 
@@ -117,7 +103,7 @@ public abstract class VlocityPackage {
                 queryResults = null;
             }
             else {
-                logging.Logger.LogAsync("Reading next batch...", Logger.Severity.Info);
+                Logger.LogAsync("Reading next batch...", Logger.Severity.Info);
                 queryResults = this.Client.getPartnerApiConnection().queryMore(queryResults.getQueryLocator());
             }
 

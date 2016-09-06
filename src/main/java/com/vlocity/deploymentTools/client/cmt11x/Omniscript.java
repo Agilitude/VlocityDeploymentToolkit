@@ -1,8 +1,8 @@
-package client.cmt11x;
+package com.vlocity.deploymentTools.client.cmt11x;
 
-import client.ArtifactTypeEnum;
-import client.CorruptedDataException;
-import client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.CorruptedDataException;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,11 +1,14 @@
-package client.cmt11x;
+package com.vlocity.deploymentTools.client.cmt11x;
 
-import client.*;
+import com.vlocity.deploymentTools.client.ArtifactNotSupportedException;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.VlocityClient;
 
 /**
  * Created by Derek on 16/06/2016.
  */
-public class VlocityPackage extends client.VlocityPackage {
+public class VlocityPackage extends com.vlocity.deploymentTools.client.VlocityPackage {
     private String packageVersion;
     private String packageMajorVersion;
     private String packageMinorVersion;
@@ -110,7 +113,7 @@ public class VlocityPackage extends client.VlocityPackage {
         return new CalculationMatrixRow(ArtifactTypeEnum.CALCULATION_MATRIX_ROW, this.getPackageName(), this.getPackageVersion());
     }
 
-    public DataPackRequest InitialiseDataPackRequest(client.DataPackRequest.RequestTypeEnum requestType, VlocityArtifact artifact, String artifactRecordId) {
+    public DataPackRequest InitialiseDataPackRequest(DataPackRequest.RequestTypeEnum requestType, VlocityArtifact artifact, String artifactRecordId) {
         return new DataPackRequest(requestType, artifact.getDataPackType(), artifactRecordId);
     }
 

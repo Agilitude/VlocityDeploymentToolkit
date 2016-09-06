@@ -1,4 +1,4 @@
-package client.cmt11x;
+package com.vlocity.deploymentTools.client.cmt11x;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
@@ -6,7 +6,7 @@ import com.google.gson.internal.LinkedTreeMap;
 /**
  * Created by Derek on 13/07/2016.
  */
-public class DataPackRequest extends client.DataPackRequest{
+public class DataPackRequest extends com.vlocity.deploymentTools.client.DataPackRequest{
     public String processType;
     public RequestDetails processData;
 

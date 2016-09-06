@@ -1,4 +1,4 @@
-package logging;
+package com.vlocity.deploymentTools.logging;
 
 import java.util.HashSet;
 

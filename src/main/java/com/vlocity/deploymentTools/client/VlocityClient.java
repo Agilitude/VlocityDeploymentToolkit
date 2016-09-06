@@ -1,7 +1,13 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
-import com.sforce.soap.metadata.*;
-import com.sforce.soap.partner.*;
+import com.sforce.soap.metadata.FileProperties;
+import com.sforce.soap.metadata.InstalledPackage;
+import com.sforce.soap.metadata.ListMetadataQuery;
+import com.sforce.soap.metadata.Metadata;
+import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.metadata.ReadResult;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import com.sforce.ws.SessionRenewer;
@@ -9,7 +15,7 @@ import com.sforce.ws.SessionRenewer;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Created by Derek on 15/06/2016.
@@ -25,6 +31,8 @@ public class VlocityClient {
     private VlocityPackage vlPackage;
     private Integer loginAttempts = 0;
     private static final Integer MAX_LOGIN_ATTEMPTS = 2;
+
+    public Boolean ReadDataPacks = true;
 
     public VlocityClient() {
 
@@ -50,7 +58,7 @@ public class VlocityClient {
         return vlPackage.getArtifactClass(artifactType);
     }
 
-    public void Deploy(ArrayList<VlocityArtifact> artifacts) throws client.UnexpectedResponseException, client.UnexpectedDataPackException, IOException {
+    public void Deploy(ArrayList<VlocityArtifact> artifacts) throws UnexpectedResponseException, UnexpectedDataPackException, IOException {
         vlPackage.Deploy(artifacts);
     }
 

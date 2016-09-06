@@ -1,21 +1,28 @@
-package taskDefs;
+package com.vlocity.deploymentTools.taskDefs;
 
-import client.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import logging.ILogHandler;
-import logging.Logger;
-import org.apache.commons.logging.Log;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.Project;
 import com.sforce.ws.ConnectionException;
-import storage.ICommitHandler;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.PackageNotFoundException;
+import com.vlocity.deploymentTools.client.PackageNotSupportedException;
+import com.vlocity.deploymentTools.client.VersionNotSupportedException;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.VlocityArtifactSerialiser;
+import com.vlocity.deploymentTools.client.VlocityClient;
+import com.vlocity.deploymentTools.logging.ILogHandler;
+import com.vlocity.deploymentTools.logging.Logger;
+import com.vlocity.deploymentTools.storage.ICommitHandler;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.io.*;
-import java.util.HashMap;
 
 /**
  * Created by Derek Choate on 25/05/2016.
@@ -38,9 +45,11 @@ public class Retrieve extends Task implements ILogHandler, ICommitHandler {
     //private Boolean unzip;
     private VlocityClient client;
     private String extractLastModifiedBy;
+    private Boolean retrieveDataPacks = true;
 
     public Retrieve() {
-        logging.Logger.RegisterHandler(this);
+	    Object logging;
+	    Logger.RegisterHandler(this);
     }
 
     public void setUsername (String username) {
@@ -101,12 +110,12 @@ public class Retrieve extends Task implements ILogHandler, ICommitHandler {
 
     public void setExtractLastModifiedBy(String extractLastModifiedBy) {this.extractLastModifiedBy = extractLastModifiedBy;}
 
+    public void setRetrieveDataPacks(Boolean retrieveDataPacks) {this.retrieveDataPacks = retrieveDataPacks;}
+
     public void execute() throws BuildException {
         try {
 
             initialiseClient();
-
-            HashMap<ArtifactTypeEnum, ArrayList<VlocityArtifact>> artifactsMappedToType = new HashMap<>();
 
             for (String artifact : artifacts.split(",")) {
 
@@ -119,16 +128,16 @@ public class Retrieve extends Task implements ILogHandler, ICommitHandler {
 
                 ArtifactTypeEnum artifactType = ArtifactTypeEnum.valueOf(artifact);
 
+                ArrayList<VlocityArtifact> artifacts;
+
                 if (this.extractLastModifiedBy != null && !this.extractLastModifiedBy.isEmpty()) {
-                    artifactsMappedToType.put(artifactType, client.QueryArtifacts(artifactType, this.extractLastModifiedBy));
+                    artifacts = client.QueryArtifacts(artifactType, this.extractLastModifiedBy);
                 }
                 else {
-                    artifactsMappedToType.put(artifactType, client.QueryArtifacts(artifactType, new ArrayList<String>()));
+                    artifacts = client.QueryArtifacts(artifactType, new ArrayList<String>());
                 }
-            }
 
-            for (ArtifactTypeEnum artifactType : artifactsMappedToType.keySet()) {
-                //writeFiles(artifactsMappedToType.get(artifactType), Constants.EXTENSIONS_MAPPED_TO_ARTIFACT_TYPE.get(artifactType));
+                writeFiles(artifacts, Constants.EXTENSIONS_MAPPED_TO_ARTIFACT_TYPE.get(artifactType));
             }
 
         } catch (ConnectionException e) {
@@ -146,8 +155,9 @@ public class Retrieve extends Task implements ILogHandler, ICommitHandler {
         }
     }
 
-    private void initialiseClient() throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException {
+    private void initialiseClient() throws ConnectionException, PackageNotSupportedException, VersionNotSupportedException, ParseException, PackageNotFoundException, PackageNotFoundException {
         client = new VlocityClient();
+        client.ReadDataPacks = retrieveDataPacks;
         client.Login(this.username, this.password, this.serverurl);
 
         log("Logged in to Salesforce.com", Project.MSG_INFO);

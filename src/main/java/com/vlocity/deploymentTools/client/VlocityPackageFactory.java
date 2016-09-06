@@ -1,4 +1,4 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ public class VlocityPackageFactory {
         String majorVersion = getMajorVersion(packageVersion);
 
         if ("vlocity_cmt".equals(packageName) && "11".equals(majorVersion)) {
-            client.cmt11x.VlocityPackage vpack = new client.cmt11x.VlocityPackage(client);
+	        com.vlocity.deploymentTools.client.cmt11x.VlocityPackage  vpack = new com.vlocity.deploymentTools.client.cmt11x.VlocityPackage (client);
 
             vpack.setPackageVersion(packageVersion);
 
@@ -31,7 +31,7 @@ public class VlocityPackageFactory {
         }
 
         if ("vlocity_ins".equals(packageName) && ("12".equals(majorVersion) || "888".equals(majorVersion))) {
-            client.ins12x.VlocityPackage vpack = new client.ins12x.VlocityPackage(client);
+	        com.vlocity.deploymentTools.client.ins12x.VlocityPackage  vpack = new com.vlocity.deploymentTools.client.ins12x.VlocityPackage (client);
 
             vpack.setPackageVersion(packageVersion);
 

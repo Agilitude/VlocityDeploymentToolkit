@@ -1,8 +1,9 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
+import com.vlocity.deploymentTools.logging.Logger;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,13 +34,13 @@ public class DataPackClient {
 
     public String getDatapack(VlocityArtifact artifact, String artifactId) throws IOException, UnexpectedResponseException, UnexpectedDataPackException {
 
-        logging.Logger.LogAsync("Reading DataPack for " + artifact.getDataPackType() + " " + artifactId);
+        Logger.LogAsync("Reading DataPack for " + artifact.getDataPackType() + " " + artifactId);
 
         URL partnerUrl = new URL(this.Client.getServerUrl());
 
         URL dataPackUri = new URL(partnerUrl.getProtocol(), partnerUrl.getHost(), this.VlocityPackage.getDatapackStub());
 
-        DataPackRequest requestData = this.VlocityPackage.InitialiseDataPackRequest(client.DataPackRequest.RequestTypeEnum.Export, artifact, artifactId);
+        DataPackRequest requestData = this.VlocityPackage.InitialiseDataPackRequest(DataPackRequest.RequestTypeEnum.Export, artifact, artifactId);
 
         HttpClient httpClient = HttpClientBuilder.create().build();
 

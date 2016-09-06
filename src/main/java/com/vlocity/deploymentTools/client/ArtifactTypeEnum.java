@@ -1,4 +1,4 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 /**
  * Created by Derek on 04/07/2016.
@@ -12,5 +12,11 @@ public enum ArtifactTypeEnum {
     CALCULATION_MATRIX_ROW,
     CALCULATION_MATRIX_VERSION,
     CARD,
-    APPLICATION_TEMPLATE
+    APPLICATION_TEMPLATE,
+    PRODUCT,
+    ATTRIBUTE_ASSIGNMENT,
+    REQUIRED_DOCUMENT,
+    PRODUCT_DOCUMENT,
+    ACTION,
+    PARTY_RELATIONSHIP_TYPE
 }

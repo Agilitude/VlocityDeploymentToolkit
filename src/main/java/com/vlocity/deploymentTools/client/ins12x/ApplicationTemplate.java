@@ -1,7 +1,8 @@
-package client.ins12x;
+package com.vlocity.deploymentTools.client.ins12x;
 
-import client.ArtifactTypeEnum;
-import client.VlocityArtifact;
+
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public class ApplicationTemplate extends VlocityArtifact {
     public ApplicationTemplate(ArtifactTypeEnum artifactType, String packageName, String packageVersion) {
         super(artifactType, packageName, packageVersion);
 
-        this.FieldDefinitions = new ArrayList<VlocityArtifact.VlocityArtifactFieldDefinition>() {{
+        this.FieldDefinitions = new ArrayList<VlocityArtifactFieldDefinition>() {{
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("Name", "Name", VlocityArtifact.FieldTypeEnum.STRING, true, true, false));
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("HtmlBlob__c", "HtmlBlob", VlocityArtifact.FieldTypeEnum.STRING));
             add(new VlocityArtifact.VlocityArtifactFieldDefinition("Type__c", "Type", VlocityArtifact.FieldTypeEnum.STRING));

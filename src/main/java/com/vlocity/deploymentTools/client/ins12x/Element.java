@@ -1,7 +1,7 @@
-package client.ins12x;
+package com.vlocity.deploymentTools.client.ins12x;
 
-import client.ArtifactTypeEnum;
-import client.VlocityArtifact;
+import com.vlocity.deploymentTools.client.ArtifactTypeEnum;
+import com.vlocity.deploymentTools.client.VlocityArtifact;
 
 import java.util.ArrayList;
 import java.util.Collections;

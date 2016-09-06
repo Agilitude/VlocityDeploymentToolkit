@@ -1,4 +1,4 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

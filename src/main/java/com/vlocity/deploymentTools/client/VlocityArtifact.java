@@ -1,4 +1,4 @@
-package client;
+package com.vlocity.deploymentTools.client;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
-import logging.Logger;
+import com.vlocity.deploymentTools.logging.Logger;
 
 /**
  * Created by Derek on 16/06/2016.
@@ -129,9 +129,12 @@ public abstract class VlocityArtifact {
 
     public void setProperties(XmlObject record) throws ParseException, ArtifactNotSupportedException, PackageNotSupportedException, VersionNotSupportedException {
         for (VlocityArtifactFieldDefinition field : this.FieldDefinitions) {
+
             String sObjectFieldName = getQualifiedName(field.SObjectFieldName, field.IsPackageMember);
 
-            Object value = null;
+            Object value = record.getField(sObjectFieldName);
+
+            if (value == null) continue;
 
             if (field.FieldType == FieldTypeEnum.STRING) {
                 value = getStringValue(record, sObjectFieldName);

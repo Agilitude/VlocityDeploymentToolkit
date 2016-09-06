@@ -1,4 +1,4 @@
-package logging;
+package com.vlocity.deploymentTools.logging;
 
 /**
  * Created by Derek on 25/08/2016.

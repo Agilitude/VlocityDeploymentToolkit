@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<project name="VlocityRetrieveExample" default="get" basedir=".">
+	<taskdef name="vlocity-retrieve" classname="com.vlocity.deploymentTools.taskDefs.Retrieve"/>
+
+<!--	<record name="logfile.txt" action="start" append="false"/>-->
+	<target name="get">
+		<vlocity-retrieve artifacts="OMNISCRIPT" retrieveDataPacks="false" username="gilbert@oldmutual.test2" password="Fingolfin15MODgen5soYid10zWMkYnn7c" serverurl="https://oldmutualafrica--test2.cs83.my.salesforce.com/services/Soap/u/37.0"/>
+	</target>
+<!--	<record name="logfile.txt" action="stop"/>-->
+</project>

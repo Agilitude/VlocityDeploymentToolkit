@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
+
+version = '0.1'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
+
+    compile group: 'com.force.api', name: 'force-wsc', version: '37.0.3'
+    compile group: 'com.force.api', name: 'force-metadata-api', version: '37.0.3'
+    compile group: 'com.force.api', name: 'force-partner-api', version: '37.0.3'
+
+    compile group: 'org.apache.ant', name: 'ant', version: '1.9.7'
+    compile group: 'org.antlr', name: 'stringtemplate', version: '4.0.2'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Blaze Services',
+                'Implementation-Version': project.version,
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version')
+    }
+}
+
+shadowJar {
+
+    baseName = 'VlocityDeploymentToolkit'
+    classifier = ''
+
+}
